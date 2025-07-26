@@ -1,101 +1,69 @@
-
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cloudflare Workers 订阅生成器</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多国家优选 IP 订阅平台</title>
   <style>
-    body {
-      background-color: #f9fafb;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      padding: 40px 10px;
-    }
-    .card {
-      background: white;
-      max-width: 500px;
-      width: 100%;
-      padding: 30px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      border-radius: 16px;
-    }
-    input, button, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    button {
-      background-color: #10b981;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #059669;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .result {
-      font-size: 13px;
-      background: #f3f4f6;
-      padding: 10px;
-      border-radius: 8px;
-      word-break: break-all;
-    }
+    body { font-family: Arial, sans-serif; padding: 2em; background: #f5f5f5; }
+    h1 { color: #333; }
+    select, input, button { padding: 0.5em; margin: 0.5em 0; font-size: 1em; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 2em; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .output { margin-top: 1em; word-break: break-all; background: #eee; padding: 1em; border-radius: 5px; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Cloudflare Workers 订阅生成器</h2>
-    <input id="uuid" placeholder="UUID，如：f23f7bcd-..." />
-    <input id="host" placeholder="Host（SNI 域名），如：example.com" />
-    <input id="path" value="/ws" placeholder="Path" />
-    <input id="tag" placeholder="节点标签，如：HK、JP、US" />
-    <input id="count" value="5" placeholder="生成节点数量" />
-    <input id="ip" placeholder="IP源地址（可选）" />
-    <input id="key" placeholder="API 密钥（可选）" />
-    <button onclick="generate()">生成订阅</button>
-    <div id="result" class="result">生成的订阅链接将在此显示...</div>
+  <div class="container">
+    <h1>优选 IP 节点订阅生成器</h1>
+    <label>选择国家：</label>
+    <select id="country">
+      <option value="US">美国</option>
+      <option value="HK">香港</option>
+      <option value="JP">日本</option>
+      <option value="SG">新加坡</option>
+      <option value="DE">德国</option>
+      <option value="CN">中国</option>
+      <option value="FR">法国</option>
+      <option value="GB">英国</option>
+      <option value="IN">印度</option>
+    </select>
+    <br>
+    <label>输入域名 (host)：</label>
+    <input type="text" id="host" placeholder="yourdomain.com">
+    <br>
+    <label>输入UUID：</label>
+    <input type="text" id="uuid" placeholder="你的UUID">
+    <br>
+    <label>选择协议：</label>
+    <select id="protocol">
+      <option value="vless">VLESS</option>
+      <option value="trojan">Trojan</option>
+    </select>
+    <br>
+    <button onclick="generate()">生成订阅链接</button>
+    <div class="output" id="result"></div>
   </div>
 
   <script>
-    const tagInput = document.getElementById("tag");
-    const ipInput = document.getElementById("ip");
+    async function generate() {
+      const country = document.getElementById('country').value;
+      const host = document.getElementById('host').value.trim();
+      const uuid = document.getElementById('uuid').value.trim();
+      const protocol = document.getElementById('protocol').value;
 
-    tagInput.addEventListener("input", () => {
-      const tag = tagInput.value.trim().toUpperCase();
-      if (tag) {
-        ipInput.value = `https://raw.githubusercontent.com/Unc1e1u0-2030/ip-db/main/${tag}.json`;
-      } else {
-        ipInput.value = "";
+      if (!host || !uuid) {
+        alert('请填写完整域名和 UUID');
+        return;
       }
-    });
 
-    function generate() {
-      const uuid = document.getElementById("uuid").value.trim();
-      const host = document.getElementById("host").value.trim();
-      const path = document.getElementById("path").value.trim();
-      const tag = document.getElementById("tag").value.trim();
-      const count = document.getElementById("count").value.trim();
-      const ip = document.getElementById("ip").value.trim();
-      const key = document.getElementById("key").value.trim();
-
-      const base = "https://2.uncleluo2030.dpdns.org/";
-      const url = `${base}?proto=vless&uuid=${uuid}&host=${host}&path=${encodeURIComponent(path)}&tag=${tag}&count=${count}${
-        ip ? `&ipsrc=${encodeURIComponent(ip)}` : ""
-      }${key ? `&key=${key}` : ""}`;
-
-      document.getElementById("result").innerText = url;
+      const url = `https://flat-salad-471e.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10`;
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        document.getElementById('result').textContent = text;
+      } catch (e) {
+        document.getElementById('result').textContent = '❌ 获取失败，请检查参数';
+      }
     }
   </script>
 </body>
