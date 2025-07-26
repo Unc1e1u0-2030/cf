@@ -96,26 +96,29 @@
   </div>
 
   <script>
-    async function generate() {
-      const country = document.getElementById('country').value;
-      const host = document.getElementById('host').value.trim();
-      const uuid = document.getElementById('uuid').value.trim();
-      const protocol = document.getElementById('protocol').value;
+  async function generate() {
+    const country = document.getElementById('country').value;
+    const host = document.getElementById('host').value.trim();
+    const uuid = document.getElementById('uuid').value.trim();
+    const protocol = document.getElementById('protocol').value;
 
-      if (!host || !uuid) {
-        alert('请填写完整域名和 UUID');
-        return;
-      }
-
-      const url = `https://mama-de-wen.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10&ipsrc=https://raw.githubusercontent.com/Unc1e1u0-2030/ip/main/ip-json/${country}.json`;
-      try {
-        const res = await fetch(url);
-        const text = await res.text();
-        document.getElementById('result').textContent = text;
-      } catch (e) {
-        document.getElementById('result').textContent = '❌ 获取失败，请检查参数';
-      }
+    if (!host || !uuid) {
+      alert('请填写完整域名和 UUID');
+      return;
     }
-  </script>
+
+    // 移除 ipsrc 参数（后端自动拼接）
+    const url = `https://mama-de-wen.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10`;
+
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      document.getElementById('result').textContent = text;
+    } catch (e) {
+      document.getElementById('result').textContent = '❌ 获取失败，请检查参数';
+    }
+  }
+</script>
+
 </body>
 </html>
