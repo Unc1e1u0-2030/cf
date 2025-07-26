@@ -32,7 +32,7 @@
       display: block;
       margin: 0.5em 0 0.2em;
     }
-    select, input, button {
+    select, input {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -42,11 +42,16 @@
       box-sizing: border-box;
     }
     button {
+      width: 100%;
+      padding: 0.6em;
+      font-size: 1em;
+      margin-top: 0.5em;
       background-color: #007bff;
       color: white;
       border: none;
-      transition: background-color 0.3s ease;
+      border-radius: 12px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
     button:hover {
       background-color: #0056b3;
@@ -102,7 +107,7 @@
         return;
       }
 
-      const url = `https://mama-de-wen.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10&ipsrc=https://raw.githubusercontent.com/Unc1e1u0-2030/ip/main/` + country + `.json`;
+      const url = `https://mama-de-wen.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10&ipsrc=https://raw.githubusercontent.com/Unc1e1u0-2030/ip/main/ip-json/${country}.json`;
       try {
         const res = await fetch(url);
         const text = await res.text();
