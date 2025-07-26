@@ -95,7 +95,8 @@
     <div class="output" id="result"></div>
   </div>
 
-  <script>
+  
+<script>
   async function generate() {
     const country = document.getElementById('country').value;
     const host = document.getElementById('host').value.trim();
@@ -107,15 +108,13 @@
       return;
     }
 
-    // 移除 ipsrc 参数（后端自动拼接）
-    const url = `https://mama-de-wen.uncleluo2030.workers.dev/?tag=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10`;
-
+    const url = `https://mama-de-wen.uncleluo2030.workers.dev/?region=${country}&host=${host}&uuid=${uuid}&proto=${protocol}&count=10`;
     try {
       const res = await fetch(url);
       const text = await res.text();
       document.getElementById('result').textContent = text;
     } catch (e) {
-      document.getElementById('result').textContent = '❌ 获取失败，请检查参数';
+      document.getElementById('result').textContent = '❌ 获取失败，请检查参数或 Worker 部署情况';
     }
   }
 </script>
